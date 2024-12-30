@@ -4,6 +4,8 @@ import { useState, useEffect } from "react";
 import Image from "next/image";
 import { supabase } from "@/lib/supabase";
 
+export const dynamic = "force-dynamic";
+
 const Projects: React.FC = () => {
   const [image, setImage] = useState<File | null>(null);
   const [projectLink, setProjectLink] = useState("");
