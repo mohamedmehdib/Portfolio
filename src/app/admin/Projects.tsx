@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import Image from "next/image";
-import { supabase } from "@/lib/supabase"; // Adjust path to your supabase client
+import { supabase } from "@/lib/supabase";
 
 const Projects: React.FC = () => {
   const [image, setImage] = useState<File | null>(null);
@@ -141,8 +141,8 @@ const Projects: React.FC = () => {
                 <Image
                   src={project.url}
                   alt={project.project_link}
-                  width={300} // Fixed width
-                  height={200} // Fixed height
+                  width={300}
+                  height={200}
                   className="object-cover object-top w-full h-[200px] transition-transform transform hover:scale-105"
                 />
                 <div className="p-4">

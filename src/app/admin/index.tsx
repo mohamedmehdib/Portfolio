@@ -4,11 +4,10 @@ export const dynamic = "force-dynamic";
 
 import { useState, useEffect } from "react";
 import { supabase } from "@/lib/supabase";
-import Projects from "./Projects"; // Assume you have this component for uploading images
-import ContactTable from "./Contact"; // The table to show contacts
+import Projects from "./Projects";
+import ContactTable from "./Contact";
 import Image from "next/image";
 
-// Define types for Contacts
 type Contact = {
   id: number;
   name: string;
@@ -17,11 +16,10 @@ type Contact = {
   created_at: string;
 };
 
-// Define types for Supabase users
 type User = {
   id: number;
   email: string;
-  password: string; // Assume plain-text password for now; change if hashing is used
+  password: string;
 };
 
 const AdminDashboard = () => {
@@ -31,17 +29,16 @@ const AdminDashboard = () => {
   const [password, setPassword] = useState("");
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [imageUrl] = useState<string | null>(null);
-  const [activeView, setActiveView] = useState<"upload" | "contacts">("upload"); // State to toggle between views
+  const [activeView, setActiveView] = useState<"upload" | "contacts">("upload");
 
   useEffect(() => {
     if (!isModalOpen) {
-      // Fetch contacts only after successful login
       const fetchContacts = async () => {
         const { data, error } = await supabase.from("contacts").select("*");
         if (error) {
           console.error(error);
         } else {
-          setContacts(data as Contact[]); // Cast fetched data to Contact[]
+          setContacts(data as Contact[]);
         }
       };
       fetchContacts();
@@ -51,9 +48,8 @@ const AdminDashboard = () => {
   const handleLogin = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
-    // Fetch user with the entered email
     const { data, error } = await supabase
-      .from("users") // Replace with your table name
+      .from("users")
       .select("*")
       .eq("email", email)
       .single();
@@ -63,13 +59,12 @@ const AdminDashboard = () => {
       return;
     }
 
-    const user = data as User; // Cast to User type
+    const user = data as User;
 
-    // Validate password (assuming plain-text for simplicity; use hashing in production)
     if (user.password === password) {
-      setIsModalOpen(false); // Close the modal on successful login
-      setEmail(""); // Clear email after successful login
-      setPassword(""); // Clear password after successful login
+      setIsModalOpen(false);
+      setEmail("");
+      setPassword("");
     } else {
       setErrorMessage("Incorrect password.");
     }
@@ -127,9 +122,8 @@ const AdminDashboard = () => {
         <>
           <h2 className="text-3xl font-semibold text-zinc-600 mb-6">Admin Dashboard</h2>
 
-          {/* Options to toggle between views */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
-            {/* Option 1: Upload Image and Project URL */}
+          
             <div
               onClick={() => setActiveView("upload")}
               className="bg-gray-300 p-6 rounded-xl shadow-lg hover:shadow-xl cursor-pointer transition duration-200"
@@ -138,7 +132,6 @@ const AdminDashboard = () => {
               <p className="mt-4 text-zinc-500">Upload images and add project URLs to keep track of your work.</p>
             </div>
 
-            {/* Option 2: View Contacts */}
             <div
               onClick={() => setActiveView("contacts")}
               className="bg-gray-300 p-6 rounded-xl shadow-lg hover:shadow-xl cursor-pointer transition duration-200"
@@ -148,11 +141,10 @@ const AdminDashboard = () => {
             </div>
           </div>
 
-          {/* Display the active view */}
           {activeView === "upload" && (
             <>
               <h3 className="text-xl font-semibold text-zinc-600 mb-4">Upload Image</h3>
-              <Projects /> {/* Pass callback to Projects */}
+              <Projects />
               {imageUrl && (
                 <div className="mt-6">
                   <h3 className="text-xl font-semibold text-zinc-600 mb-2">Uploaded Image</h3>
@@ -165,7 +157,6 @@ const AdminDashboard = () => {
           {activeView === "contacts" && (
             <>
               <h3 className="text-xl font-semibold text-zinc-600 mb-4">Contact Table</h3>
-              {/* Call the ContactTable component here */}
               <ContactTable contacts={contacts} handleDelete={handleDelete} />
             </>
           )}

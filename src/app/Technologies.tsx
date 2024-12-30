@@ -22,6 +22,7 @@ const tech2 = [
   { src: "/firebase.png", name: "Firebase" },
   { src: "/flet.svg", name: "Flet" },
   { src: "/npm.png", name: "Npm" },
+  { src: "/wordpress.png", name: "Wordpress" },
 ];
 
 const Technologies = () => {
@@ -39,7 +40,7 @@ const Technologies = () => {
                   height={500}
                   alt={item.name}
                   src={item.src}
-                  className="p-2 md:p-4 w-20 h-20 md:w-32 md:h-32 hover:p-1.5 duration-200 rounded-lg bg-white"
+                  className="p-2 md:p-4 w-20 h-20 md:w-32 md:h-32 md:hover:p-1.5 duration-200 rounded-lg bg-white"
                 />
                 <p className="text-sm md:text-lg mt-2">{item.name}</p>
               </div>
@@ -55,7 +56,7 @@ const Technologies = () => {
                   height={500}
                   alt={item.name}
                   src={item.src}
-                  className="p-2 md:p-4 w-20 h-20 md:w-32 md:h-32 hover:p-1.5 duration-200 rounded-lg bg-white"
+                  className="p-2 md:p-4 w-20 h-20 md:w-32 md:h-32 md:hover:p-1.5 duration-200 rounded-lg bg-white"
                 />
                 <p className="text-sm md:text-lg mt-2">{item.name}</p>
               </div>

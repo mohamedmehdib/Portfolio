@@ -32,7 +32,7 @@ export default function Hero() {
           )}
         </p>
         <p className="text-base md:text-2xl py-5 text-justify">
-          As a seasoned men&apos;s coach, I&apos;m committed to helping ambitious men break through their limitations and achieve extraordinary results. I specialize in guiding men towards personal growth, leadership development, and relationship building. With a focus on practical strategies and mindset shifts, I empower my clients to live their best lives.
+          {/* As a seasoned men&apos;s coach, I&apos;m committed to helping ambitious men break through their limitations and achieve extraordinary results. I specialize in guiding men towards personal growth, leadership development, and relationship building. With a focus on practical strategies and mindset shifts, I empower my clients to live their best lives. */}
         </p>
       </div>
       <div className="md:w-1/2 pb-14 md:pb-0">
