@@ -46,18 +46,18 @@ const Contact: React.FC = () => {
       />
       <div className="text-center text-3xl md:text-5xl md:py-10">Contact Us!</div>
       <div className="flex flex-col-reverse md:flex-row">
-        <div className="md:w-1/2 my-auto px-10 md:space-y-2">
-          <div className="flex text-left text-lg md:text-xl items-center space-x-3">
+        <div className="md:w-1/2 my-auto px-2 md:px-10 md:space-y-2">
+          <div className="flex text-left md:text-xl items-center space-x-3">
             <i className="p-2 md:p-5 rounded-full text-3xl md:text-4xl uil uil-map-marker"></i>
             <p>Tunisia, Sousse</p>
           </div>
-          <div className="flex text-left text-lg md:text-xl items-center space-x-3">
+          <div className="flex text-left md:text-xl items-center space-x-3">
             <i className="p-2 md:p-5 rounded-full text-3xl md:text-4xl uil uil-phone"></i>
-            <p>55 555 555</p>
+            <p>52 975 473</p>
           </div>
-          <div className="flex text-left text-lg md:text-xl items-center space-x-3">
+          <div className="flex text-left md:text-xl items-center space-x-3">
             <i className="p-2 md:p-5 rounded-full text-3xl md:text-4xl uil uil-mailbox"></i>
-            <p>contact@gmail.com</p>
+            <p>contact@mohamedmehdi.me</p>
           </div>
         </div>
         <form onSubmit={handleSubmit} className="flex flex-col md:w-1/2 space-y-5 p-4 md:p-12">

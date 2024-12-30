@@ -13,7 +13,6 @@ type Contact = {
   email: string;
   message: string;
   created_at: string;
-  [key: string]: any; // Extendable for additional fields
 };
 
 // Define types for Supabase users
@@ -29,7 +28,7 @@ const AdminDashboard = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
-  const [imageUrl, setImageUrl] = useState<string | null>(null); // Store the uploaded image URL
+  const [imageUrl] = useState<string | null>(null);
   const [activeView, setActiveView] = useState<"upload" | "contacts">("upload"); // State to toggle between views
 
   useEffect(() => {

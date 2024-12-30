@@ -29,12 +29,14 @@ const Technologies = () => {
     <div className="text-zinc-600 bg-gray-300 py-10 px-4 md:px-24 font-sans">
       <h1 className="text-center mb-10 text-3xl md:text-5xl">Technologies</h1>
 
-      <div className="stock-ticker font-medium text-sm py-2.5 overflow-hidden select-none">
+      <div className="stock-ticker font-medium text-sm py-2.5 space-y-3 overflow-hidden select-none">
         <Marquee speed={50} gradient={false} pauseOnHover>
           <div className="flex">
             {tech1.map((item, index) => (
               <div key={index} className="flex-shrink-0 mx-3 md:mx-6 text-center">
                 <Image
+                  width={50}
+                  height={50}
                   alt={item.name}
                   src={item.src}
                   className="p-2 md:p-4 w-20 h-20 md:w-32 md:h-32 hover:scale-110 duration-200 rounded-lg bg-white"
@@ -49,6 +51,8 @@ const Technologies = () => {
             {tech2.map((item, index) => (
               <div key={index} className="flex-shrink-0 mx-3 md:mx-6 text-center">
                 <Image
+                  width={50}
+                  height={50}
                   alt={item.name}
                   src={item.src}
                   className="p-2 md:p-4 w-20 h-20 md:w-32 md:h-32 hover:scale-110 duration-200 rounded-lg bg-white"

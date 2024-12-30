@@ -31,7 +31,7 @@ export default function Footer() {
           <i className="hover:text-green-700 duration-300 uil uil-whatsapp"></i>
         </a>
       </ul>
-      <div>
+      <div className='md:text-lg'>
         Copyrights Ⓒ 2024 . All rights reserved
       </div>
     </div>
