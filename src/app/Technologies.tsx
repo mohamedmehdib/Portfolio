@@ -22,7 +22,6 @@ const tech2 = [
   { src: "/firebase.png", name: "Firebase" },
   { src: "/flet.svg", name: "Flet" },
   { src: "/npm.png", name: "Npm" },
-  { src: "/wordpress.png", name: "Wordpress" },
 ];
 
 const Technologies = () => {
