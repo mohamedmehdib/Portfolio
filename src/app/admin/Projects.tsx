@@ -1,0 +1,177 @@
+"use client";
+
+import { useState, useEffect } from "react";
+import Image from "next/image";
+import { supabase } from "@/lib/supabase"; // Adjust path to your supabase client
+
+const Projects: React.FC = () => {
+  const [image, setImage] = useState<File | null>(null);
+  const [projectLink, setProjectLink] = useState("");
+  const [uploading, setUploading] = useState(false);
+  const [message, setMessage] = useState("");
+  const [projects, setProjects] = useState<{ id: number; project_link: string; url: string }[]>([]);
+
+  useEffect(() => {
+    const fetchProjects = async () => {
+      try {
+        const { data, error } = await supabase.from("images").select("*");
+        if (error) throw error;
+        setProjects(data || []);
+      } catch (error) {
+        setMessage(`Error loading projects: ${(error as Error).message}`);
+      }
+    };
+
+    fetchProjects();
+  }, []);
+
+  const handleImageChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    if (event.target.files && event.target.files[0]) {
+      setImage(event.target.files[0]);
+    }
+  };
+
+  const uploadImage = async () => {
+    if (!image || !projectLink.trim()) {
+      setMessage("Please provide an image and a project link.");
+      return;
+    }
+
+    setUploading(true);
+    setMessage("");
+
+    try {
+      const fileExt = image.name.split(".").pop();
+      const filePath = `${projectLink}.${fileExt}`;
+
+      const { data, error: storageError } = await supabase.storage
+        .from("images")
+        .upload(filePath, image);
+      console.log(data)
+      if (storageError) throw storageError;
+
+      const publicURL = supabase.storage.from("images").getPublicUrl(filePath).data?.publicUrl;
+
+      if (!publicURL) throw new Error("Failed to retrieve public URL.");
+
+      const { error: dbError } = await supabase
+        .from("images")
+        .insert([{ project_link: projectLink, url: publicURL }]);
+
+      if (dbError) throw dbError;
+
+      const { data: updatedProjects, error: fetchError } = await supabase.from("images").select("*");
+      if (fetchError) throw fetchError;
+
+      setProjects(updatedProjects || []);
+      setMessage("Image uploaded and saved to the database successfully!");
+    } catch (error) {
+      setMessage(`Error: ${(error as Error).message}`);
+    } finally {
+      setUploading(false);
+    }
+  };
+
+  const deleteProject = async (projectId: number) => {
+    const confirmDelete = window.confirm("Are you sure you want to delete this project?");
+    if (!confirmDelete) return;
+
+    try {
+      const project = projects.find((p) => p.id === projectId);
+      if (!project) throw new Error("Project not found");
+
+      const filePath = project.url.split("/").pop();
+      if (!filePath) throw new Error("File path invalid");
+
+      const { error: deleteStorageError } = await supabase.storage.from("images").remove([filePath]);
+      if (deleteStorageError) throw deleteStorageError;
+
+      const { error: deleteDbError } = await supabase.from("images").delete().eq("id", projectId);
+      if (deleteDbError) throw deleteDbError;
+
+      setProjects(projects.filter((p) => p.id !== projectId));
+      setMessage("Project deleted successfully!");
+    } catch (error) {
+      setMessage(`Error deleting project: ${(error as Error).message}`);
+    }
+  };
+
+  return (
+    <div className="max-w-4xl mx-auto p-6 bg-gray-300 shadow-md border-2 border-zinc-600 rounded-lg">
+      <h1 className="text-3xl font-semibold text-center text-zinc-600 mb-6">Upload Your Project</h1>
+
+      <div className="mb-6">
+        <label className="block text-sm font-medium text-gray-700 mb-2">Project Link</label>
+        <input
+          type="text"
+          value={projectLink}
+          onChange={(e) => setProjectLink(e.target.value)}
+          className="border-2 border-gray-600 bg-gray-300 rounded-lg p-3 w-full shadow-sm focus:outline-none"
+        />
+      </div>
+
+      <div className="mb-6">
+        <label className="block text-sm font-medium text-gray-700 mb-2">Select Image</label>
+        <input
+          type="file"
+          accept="image/*"
+          onChange={handleImageChange}
+          className="border-2 border-gray-300 rounded-lg p-3 w-full shadow-sm focus:outline-none focus:ring-2 focus:ring-zinc-500"
+        />
+      </div>
+
+      <button
+        onClick={uploadImage}
+        disabled={uploading}
+        className={`w-full p-3 bg-zinc-600 text-gray-300 rounded-lg font-semibold ${
+          uploading ? "opacity-50 cursor-not-allowed" : "hover:bg-zinc-700"
+        } transition-all`}
+      >
+        {uploading ? "Uploading..." : "Upload"}
+      </button>
+
+      {message && <p className="mt-4 text-center text-sm text-red-500">{message}</p>}
+
+      <div className="mt-12">
+        <h2 className="text-2xl font-semibold text-center text-gray-800 mb-6">Uploaded Projects</h2>
+        {projects.length > 0 ? (
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+            {projects.map((project) => (
+              <div key={project.id} className="bg-gray-300 shadow-lg rounded-lg overflow-hidden">
+                <Image
+                  src={project.url}
+                  alt={project.project_link}
+                  width={300} // Fixed width
+                  height={200} // Fixed height
+                  className="object-cover object-top w-full h-[200px] transition-transform transform hover:scale-105"
+                />
+                <div className="p-4">
+                  <h3 className="text-lg font-semibold text-gray-800">{project.project_link}</h3>
+                  <a
+                    href={project.project_link}
+                    className="text-zinc-500 mt-2 inline-block hover:text-zinc-700"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    View Project
+                  </a>
+                  <br />
+                  <button
+                    onClick={() => deleteProject(project.id)}
+                    className="mt-4 p-2 rounded-xl bg-red-500 text-white hover:bg-red-700 duration-300"
+                  >
+                    Delete Project
+                  </button>
+                </div>
+              </div>
+            ))}
+          </div>
+        ) : (
+          <p className="text-center text-gray-500">No projects uploaded yet.</p>
+        )}
+      </div>
+    </div>
+  );
+};
+
+export default Projects;
