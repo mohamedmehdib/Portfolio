@@ -1,5 +1,7 @@
 "use client";
 
+export const dynamic = "force-dynamic";
+
 import { useState, useEffect } from "react";
 import { supabase } from "@/lib/supabase";
 import Projects from "./Projects"; // Assume you have this component for uploading images
@@ -84,7 +86,6 @@ const AdminDashboard = () => {
     }
   };
 
-
   return (
     <div className="p-6 bg-gray-300 text-zinc-600 min-h-screen">
       {isModalOpen && (
@@ -151,7 +152,7 @@ const AdminDashboard = () => {
           {activeView === "upload" && (
             <>
               <h3 className="text-xl font-semibold text-zinc-600 mb-4">Upload Image</h3>
-              <Projects/> {/* Pass callback to Projects */}
+              <Projects /> {/* Pass callback to Projects */}
               {imageUrl && (
                 <div className="mt-6">
                   <h3 className="text-xl font-semibold text-zinc-600 mb-2">Uploaded Image</h3>
