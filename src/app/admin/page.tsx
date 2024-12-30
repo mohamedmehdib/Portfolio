@@ -6,6 +6,8 @@ import Projects from "./Projects";
 import ContactTable from "./Contact";
 import Image from "next/image";
 
+export const dynamic = "force-dynamic";
+
 type Contact = {
   id: number;
   name: string;
