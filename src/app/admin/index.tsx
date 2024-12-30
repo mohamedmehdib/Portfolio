@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { supabase } from "../../lib/supabase";
+import { supabase } from "@/lib/supabase";
 import Projects from "./Projects"; // Assume you have this component for uploading images
 import ContactTable from "./Contact"; // The table to show contacts
 import Image from "next/image";
