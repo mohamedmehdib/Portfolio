@@ -32,7 +32,7 @@ export default function Hero() {
           )}
         </p>
         <p className="text-base md:text-2xl py-5 text-justify">
-          {/* As a seasoned men&apos;s coach, I&apos;m committed to helping ambitious men break through their limitations and achieve extraordinary results. I specialize in guiding men towards personal growth, leadership development, and relationship building. With a focus on practical strategies and mindset shifts, I empower my clients to live their best lives. */}
+        Hi, I&apos;m a web developer passionate about building responsive, dynamic, and user-friendly websites. I specialize in modern frameworks like React, Next.js, and Node.js, combined with Tailwind CSS for sleek designs. With a focus on clean, efficient code, I deliver scalable solutions tailored to client needs. I thrive on solving challenges, learning new technologies, and collaborating to bring creative ideas to life. Let&apos;s build something amazing together!
         </p>
       </div>
       <div className="md:w-1/2 pb-14 md:pb-0">

@@ -4,12 +4,15 @@ import React, { useEffect, useState } from "react";
 import Image from "next/image";
 import { supabase } from "@/lib/supabase";
 
-export const dynamic = "force-dynamic";
-
 interface Project {
   id: number;
   url: string;
   project_link: string;
+}
+
+// Validate environment variables outside the component
+if (!process.env.NEXT_PUBLIC_SUPABASE_URL || !process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY) {
+  console.error("Supabase environment variables are missing.");
 }
 
 export default function Projects() {
@@ -18,12 +21,6 @@ export default function Projects() {
   useEffect(() => {
     const fetchProjects = async () => {
       try {
-        // Ensure Supabase client works only if env variables are correctly set
-        if (!process.env.NEXT_PUBLIC_SUPABASE_URL || !process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY) {
-          console.error("Supabase environment variables are missing.");
-          return;
-        }
-
         const { data, error } = await supabase
           .from("images")
           .select("id, url, project_link");
@@ -41,11 +38,6 @@ export default function Projects() {
     fetchProjects();
   }, []);
 
-  if (typeof window === "undefined") {
-    // Prevent execution during server-side rendering or build
-    return null;
-  }
-
   return (
     <div id="projects" className="text-zinc-600 bg-gray-300 py-5">
       <div className="text-center md:text-5xl text-4xl">My Latest Projects</div>
@@ -53,16 +45,16 @@ export default function Projects() {
         {projects.map((item) => (
           <div
             key={item.id}
-            className="block w-96 h-52 md:hover:scale-125 relative md:m-10 my-5 duration-200"
+            className="block w-96 md:hover:scale-125 relative md:m-10 my-5 duration-200"
           >
             <a href={item.project_link} target="_blank" rel="noopener noreferrer">
               <Image
                 alt="Project image"
-                className="object-top hover:object-bottom object-cover duration-[3s] rounded-xl cursor-pointer"
+                className="object-top hover:object-bottom object-cover h-52 duration-[3s] rounded-xl cursor-pointer"
                 src={item.url}
-                width={400} // Add fixed width
-                height={200} // Add fixed height
-                priority // Improves performance for above-the-fold content
+                width={400}
+                height={200}
+                priority
               />
             </a>
           </div>

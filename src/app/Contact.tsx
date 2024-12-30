@@ -3,7 +3,10 @@
 import React, { useState } from "react";
 import { supabase } from "@/lib/supabase";
 
-export const dynamic = "force-dynamic";
+// Validate environment variables outside the component
+if (!process.env.NEXT_PUBLIC_SUPABASE_URL || !process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY) {
+  console.error("Supabase environment variables are missing.");
+}
 
 const Contact: React.FC = () => {
   const [name, setName] = useState("");
@@ -18,19 +21,12 @@ const Contact: React.FC = () => {
 
     // Validate inputs
     if (!name || !email || !message) {
-      setStatus("All fields are required");
+      setStatus("All fields are required.");
       setLoading(false);
       return;
     }
 
     try {
-      // Ensure Supabase client works only if env variables are correctly set
-      if (!process.env.NEXT_PUBLIC_SUPABASE_URL || !process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY) {
-        setStatus("Supabase environment variables are missing.");
-        setLoading(false);
-        return;
-      }
-
       // Insert data into Supabase
       const { error } = await supabase.from("contacts").insert([
         { name, email, message },
@@ -40,24 +36,18 @@ const Contact: React.FC = () => {
         console.error("Error inserting data:", error.message);
         setStatus("Failed to submit the form. Please try again.");
       } else {
-        console.log("Data inserted successfully");
         setStatus("Form submitted successfully!");
         setName("");
         setEmail("");
         setMessage("");
       }
-    } catch (err : unknown) {
+    } catch (err: unknown) {
       console.error("Unexpected error inserting data:", err);
       setStatus("An unexpected error occurred. Please try again.");
+    } finally {
+      setLoading(false);
     }
-
-    setLoading(false);
   };
-
-  if (typeof window === "undefined") {
-    // Prevent execution during server-side rendering or build
-    return null;
-  }
 
   return (
     <div id="contact" className="text-zinc-600 bg-gray-300 py-5">
@@ -85,7 +75,11 @@ const Contact: React.FC = () => {
           onSubmit={handleSubmit}
           className="flex flex-col md:w-1/2 space-y-5 p-4 md:p-12"
         >
-          {status && <p className="text-zinc-600 text-center text-lg mt-2">{status}</p>}
+          {status && (
+            <p className={`text-center text-lg mt-2 ${status.includes("successfully") ? "text-green-600" : "text-red-600"}`}>
+              {status}
+            </p>
+          )}
           <input
             type="text"
             value={name}
