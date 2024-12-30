@@ -35,11 +35,11 @@ const Technologies = () => {
             {tech1.map((item, index) => (
               <div key={index} className="flex-shrink-0 mx-3 md:mx-6 text-center">
                 <Image
-                  width={50}
-                  height={50}
+                  width={500}
+                  height={500}
                   alt={item.name}
                   src={item.src}
-                  className="p-2 md:p-4 w-20 h-20 md:w-32 md:h-32 hover:scale-110 duration-200 rounded-lg bg-white"
+                  className="p-2 md:p-4 w-20 h-20 md:w-32 md:h-32 hover:p-1.5 duration-200 rounded-lg bg-white"
                 />
                 <p className="text-sm md:text-lg mt-2">{item.name}</p>
               </div>
@@ -51,11 +51,11 @@ const Technologies = () => {
             {tech2.map((item, index) => (
               <div key={index} className="flex-shrink-0 mx-3 md:mx-6 text-center">
                 <Image
-                  width={50}
-                  height={50}
+                  width={500}
+                  height={500}
                   alt={item.name}
                   src={item.src}
-                  className="p-2 md:p-4 w-20 h-20 md:w-32 md:h-32 hover:scale-110 duration-200 rounded-lg bg-white"
+                  className="p-2 md:p-4 w-20 h-20 md:w-32 md:h-32 hover:p-1.5 duration-200 rounded-lg bg-white"
                 />
                 <p className="text-sm md:text-lg mt-2">{item.name}</p>
               </div>
