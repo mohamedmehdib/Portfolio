@@ -1,11 +1,12 @@
-"use client"
-import React, { useState } from 'react';
-import { supabase } from '@/lib/supabase';
+"use client";
+
+import React, { useState } from "react";
+import { supabase } from "@/lib/supabase";
 
 const Contact: React.FC = () => {
-  const [name, setName] = useState('');
-  const [email, setEmail] = useState('');
-  const [message, setMessage] = useState('');
+  const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
+  const [message, setMessage] = useState("");
   const [status, setStatus] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
 
@@ -15,28 +16,46 @@ const Contact: React.FC = () => {
 
     // Validate inputs
     if (!name || !email || !message) {
-      setStatus('All fields are required');
+      setStatus("All fields are required");
       setLoading(false);
       return;
     }
 
-    // Insert data into Supabase
-    const { error } = await supabase.from('contacts').insert([
-      { name, email, message }
-    ]);
+    try {
+      // Ensure Supabase client works only if env variables are correctly set
+      if (!process.env.NEXT_PUBLIC_SUPABASE_URL || !process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY) {
+        setStatus("Supabase environment variables are missing.");
+        setLoading(false);
+        return;
+      }
 
-    if (error) {
-      console.error('Error inserting data:', error.message);
-      setStatus('Failed to submit the form. Please try again.');
-    } else {
-      console.log('Data inserted successfully');
-      setStatus('Form submitted successfully!');
-      setName('');
-      setEmail('');
-      setMessage('');
+      // Insert data into Supabase
+      const { error } = await supabase.from("contacts").insert([
+        { name, email, message },
+      ]);
+
+      if (error) {
+        console.error("Error inserting data:", error.message);
+        setStatus("Failed to submit the form. Please try again.");
+      } else {
+        console.log("Data inserted successfully");
+        setStatus("Form submitted successfully!");
+        setName("");
+        setEmail("");
+        setMessage("");
+      }
+    } catch (err: any) {
+      console.error("Unexpected error inserting data:", err.message);
+      setStatus("An unexpected error occurred. Please try again.");
     }
+
     setLoading(false);
   };
+
+  if (typeof window === "undefined") {
+    // Prevent execution during server-side rendering or build
+    return null;
+  }
 
   return (
     <div id="contact" className="text-zinc-600 bg-gray-300 py-5">
@@ -60,7 +79,10 @@ const Contact: React.FC = () => {
             <p>contact@mohamedmehdi.me</p>
           </div>
         </div>
-        <form onSubmit={handleSubmit} className="flex flex-col md:w-1/2 space-y-5 p-4 md:p-12">
+        <form
+          onSubmit={handleSubmit}
+          className="flex flex-col md:w-1/2 space-y-5 p-4 md:p-12"
+        >
           {status && <p className="text-zinc-600 text-center text-lg mt-2">{status}</p>}
           <input
             type="text"
@@ -90,7 +112,7 @@ const Contact: React.FC = () => {
             type="submit"
             disabled={loading}
           >
-            {loading ? 'Submitting...' : 'Submit'}
+            {loading ? "Submitting..." : "Submit"}
           </button>
         </form>
       </div>
