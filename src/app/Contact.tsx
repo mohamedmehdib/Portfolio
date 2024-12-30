@@ -44,8 +44,8 @@ const Contact: React.FC = () => {
         setEmail("");
         setMessage("");
       }
-    } catch (err: any) {
-      console.error("Unexpected error inserting data:", err.message);
+    } catch (err) {
+      console.error("Unexpected error inserting data:", err);
       setStatus("An unexpected error occurred. Please try again.");
     }
 
