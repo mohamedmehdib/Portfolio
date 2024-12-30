@@ -31,8 +31,8 @@ export default function Projects() {
         } else {
           setProjects(data || []);
         }
-      } catch (err) {
-        console.error("Unexpected error fetching projects:", err);
+      } catch (err: Error) {
+        console.error("Unexpected error fetching projects:", err.message);
       }
     };
 
