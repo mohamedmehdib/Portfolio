@@ -7,6 +7,7 @@ import Technologies from "./Technologies";
 import Projects from "./Projects";
 // import '@splidejs/splide/dist/css/splide.min.css';
 
+export const dynamic = "force-dynamic";
 
 export default function Home() {
   return (
