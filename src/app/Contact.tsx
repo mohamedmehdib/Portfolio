@@ -3,6 +3,8 @@
 import React, { useState } from "react";
 import { supabase } from "@/lib/supabase";
 
+export const dynamic = "force-dynamic";
+
 const Contact: React.FC = () => {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
