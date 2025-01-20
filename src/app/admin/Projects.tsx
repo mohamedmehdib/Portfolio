@@ -9,14 +9,15 @@ export const dynamic = "force-dynamic";
 const Projects: React.FC = () => {
   const [image, setImage] = useState<File | null>(null);
   const [projectLink, setProjectLink] = useState("");
+  const [ranking, setRanking] = useState<number>(0); // New state for ranking
   const [uploading, setUploading] = useState(false);
   const [message, setMessage] = useState("");
-  const [projects, setProjects] = useState<{ id: number; project_link: string; url: string }[]>([]);
+  const [projects, setProjects] = useState<{ id: number; project_link: string; url: string; ranking: number }[]>([]);
 
   useEffect(() => {
     const fetchProjects = async () => {
       try {
-        const { data, error } = await supabase.from("images").select("*");
+        const { data, error } = await supabase.from("images").select("*").order("ranking", { ascending: true });
         if (error) throw error;
         setProjects(data || []);
       } catch (error) {
@@ -34,8 +35,8 @@ const Projects: React.FC = () => {
   };
 
   const uploadImage = async () => {
-    if (!image || !projectLink.trim()) {
-      setMessage("Please provide an image and a project link.");
+    if (!image || !projectLink.trim() || ranking < 1) {
+      setMessage("Please provide an image, a project link, and a valid ranking.");
       return;
     }
 
@@ -46,23 +47,18 @@ const Projects: React.FC = () => {
       const fileExt = image.name.split(".").pop();
       const filePath = `${projectLink}.${fileExt}`;
 
-      const { data, error: storageError } = await supabase.storage
-        .from("images")
-        .upload(filePath, image);
-      console.log(data)
+      const { error: storageError } = await supabase.storage.from("images").upload(filePath, image);
       if (storageError) throw storageError;
 
       const publicURL = supabase.storage.from("images").getPublicUrl(filePath).data?.publicUrl;
 
       if (!publicURL) throw new Error("Failed to retrieve public URL.");
 
-      const { error: dbError } = await supabase
-        .from("images")
-        .insert([{ project_link: projectLink, url: publicURL }]);
+      const { error: dbError } = await supabase.from("images").insert([{ project_link: projectLink, url: publicURL, ranking }]);
 
       if (dbError) throw dbError;
 
-      const { data: updatedProjects, error: fetchError } = await supabase.from("images").select("*");
+      const { data: updatedProjects, error: fetchError } = await supabase.from("images").select("*").order("ranking", { ascending: true });
       if (fetchError) throw fetchError;
 
       setProjects(updatedProjects || []);
@@ -71,6 +67,21 @@ const Projects: React.FC = () => {
       setMessage(`Error: ${(error as Error).message}`);
     } finally {
       setUploading(false);
+    }
+  };
+
+  const updateRanking = async (projectId: number, newRanking: number) => {
+    try {
+      const { error } = await supabase.from("images").update({ ranking: newRanking }).eq("id", projectId);
+      if (error) throw error;
+
+      const { data: updatedProjects, error: fetchError } = await supabase.from("images").select("*").order("ranking", { ascending: true });
+      if (fetchError) throw fetchError;
+
+      setProjects(updatedProjects || []);
+      setMessage("Ranking updated successfully!");
+    } catch (error) {
+      setMessage(`Error updating ranking: ${(error as Error).message}`);
     }
   };
 
@@ -113,6 +124,17 @@ const Projects: React.FC = () => {
       </div>
 
       <div className="mb-6">
+        <label className="block text-sm font-medium text-gray-700 mb-2">Ranking</label>
+        <input
+          type="number"
+          min="1"
+          value={ranking}
+          onChange={(e) => setRanking(Number(e.target.value))}
+          className="border-2 border-gray-600 bg-gray-300 rounded-lg p-3 w-full shadow-sm focus:outline-none"
+        />
+      </div>
+
+      <div className="mb-6">
         <label className="block text-sm font-medium text-gray-700 mb-2">Select Image</label>
         <input
           type="file"
@@ -149,6 +171,14 @@ const Projects: React.FC = () => {
                 />
                 <div className="p-4">
                   <h3 className="text-lg font-semibold text-gray-800">{project.project_link}</h3>
+                  <p className="text-sm text-gray-500">Ranking: {project.ranking}</p>
+                  <input
+                    type="number"
+                    min="1"
+                    value={project.ranking}
+                    onChange={(e) => updateRanking(project.id, Number(e.target.value))}
+                    className="border mt-2 p-1 rounded-md w-full"
+                  />
                   <a
                     href={project.project_link}
                     className="text-zinc-500 mt-2 inline-block hover:text-zinc-700"
