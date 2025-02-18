@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { supabase } from "@/lib/supabase";
+import { supabase } from "@/lib/supabase"; // Remove User import
 import Projects from "./Projects";
 import ContactTable from "./Contact";
 import Image from "next/image";
@@ -16,6 +16,12 @@ type Contact = {
   created_at: string;
 };
 
+// Define a minimal type for the user object
+type AuthUser = {
+  id: string;
+  email?: string;
+};
+
 const AdminDashboard = () => {
   const [contacts, setContacts] = useState<Contact[]>([]);
   const [isModalOpen, setIsModalOpen] = useState(true);
@@ -24,7 +30,7 @@ const AdminDashboard = () => {
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [imageUrl] = useState<string | null>(null);
   const [activeView, setActiveView] = useState<"upload" | "contacts">("upload");
-  const [user, setUser] = useState<any>(null); // Store the authenticated user
+  const [user, setUser] = useState<AuthUser | null>(null); // Use the custom AuthUser type
 
   // Fetch contacts data from Supabase
   useEffect(() => {
@@ -43,9 +49,13 @@ const AdminDashboard = () => {
   // Check if the user is authenticated on component mount
   useEffect(() => {
     const fetchUser = async () => {
-      const { data: { user } } = await supabase.auth.getUser();
-      setUser(user);
-      setIsModalOpen(!user); // Close the modal if the user is authenticated
+      const { data: { user }, error } = await supabase.auth.getUser();
+      if (error) {
+        console.error("Error fetching user:", error);
+      } else if (user) {
+        setUser({ id: user.id, email: user.email }); // Map the user object to AuthUser
+        setIsModalOpen(false); // Close the modal if the user is authenticated
+      }
     };
 
     fetchUser();
@@ -66,9 +76,11 @@ const AdminDashboard = () => {
         return;
       }
 
-      setUser(data.user);
-      setIsModalOpen(false); // Close the modal after successful login
-      setErrorMessage(null);
+      if (data.user) {
+        setUser({ id: data.user.id, email: data.user.email }); // Map the user object to AuthUser
+        setIsModalOpen(false); // Close the modal after successful login
+        setErrorMessage(null);
+      }
     } catch (error) {
       setErrorMessage("An error occurred during login.");
     }
