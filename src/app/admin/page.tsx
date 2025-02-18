@@ -83,6 +83,7 @@ const AdminDashboard = () => {
       }
     } catch (error) {
       setErrorMessage("An error occurred during login.");
+      console.log(error)
     }
   };
 
