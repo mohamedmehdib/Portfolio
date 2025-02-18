@@ -16,12 +16,6 @@ type Contact = {
   created_at: string;
 };
 
-type User = {
-  id: number;
-  email: string;
-  password: string;
-};
-
 const AdminDashboard = () => {
   const [contacts, setContacts] = useState<Contact[]>([]);
   const [isModalOpen, setIsModalOpen] = useState(true);
@@ -30,6 +24,7 @@ const AdminDashboard = () => {
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [imageUrl] = useState<string | null>(null);
   const [activeView, setActiveView] = useState<"upload" | "contacts">("upload");
+  const [user, setUser] = useState<any>(null); // Store the authenticated user
 
   // Fetch contacts data from Supabase
   useEffect(() => {
@@ -45,31 +40,52 @@ const AdminDashboard = () => {
     fetchContacts();
   }, []);
 
+  // Check if the user is authenticated on component mount
+  useEffect(() => {
+    const fetchUser = async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      setUser(user);
+      setIsModalOpen(!user); // Close the modal if the user is authenticated
+    };
+
+    fetchUser();
+  }, []);
+
+  // Handle login with Supabase Auth
   const handleLogin = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
-    const { data, error } = await supabase
-      .from("users")
-      .select("*")
-      .eq("email", email)
-      .single();
+    try {
+      const { data, error } = await supabase.auth.signInWithPassword({
+        email,
+        password,
+      });
 
-    if (error) {
-      setErrorMessage("User not found.");
-      return;
-    }
+      if (error) {
+        setErrorMessage(error.message);
+        return;
+      }
 
-    const user = data as User;
-
-    if (user.password === password) {
-      setIsModalOpen(false);
-      setEmail("");
-      setPassword("");
-    } else {
-      setErrorMessage("Incorrect password.");
+      setUser(data.user);
+      setIsModalOpen(false); // Close the modal after successful login
+      setErrorMessage(null);
+    } catch (error) {
+      setErrorMessage("An error occurred during login.");
     }
   };
 
+  // Handle logout
+  const handleLogout = async () => {
+    const { error } = await supabase.auth.signOut();
+    if (error) {
+      setErrorMessage(error.message);
+    } else {
+      setUser(null);
+      setIsModalOpen(true); // Reopen the login modal
+    }
+  };
+
+  // Handle delete contact
   const handleDelete = async (id: number) => {
     const { error } = await supabase.from("contacts").delete().eq("id", id);
     if (error) {
@@ -83,6 +99,7 @@ const AdminDashboard = () => {
 
   return (
     <div className="p-6 bg-gray-300 text-zinc-600 min-h-screen">
+      {/* Login Modal */}
       {isModalOpen && (
         <div className="fixed flex justify-center items-center w-screen h-screen">
           <div className="bg-gray-300 p-6 border-2 border-zinc-600 rounded-xl shadow-lg">
@@ -118,9 +135,18 @@ const AdminDashboard = () => {
         </div>
       )}
 
-      {!isModalOpen && (
+      {/* Admin Dashboard */}
+      {!isModalOpen && user && (
         <>
-          <h2 className="text-3xl font-semibold text-zinc-600 mb-6">Admin Dashboard</h2>
+          <div className="flex justify-between items-center mb-6">
+            <h2 className="text-3xl font-semibold text-zinc-600">Admin Dashboard</h2>
+            <button
+              onClick={handleLogout}
+              className="p-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition"
+            >
+              Logout
+            </button>
+          </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
             <div
