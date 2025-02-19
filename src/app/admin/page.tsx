@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { supabase } from "@/lib/supabase"; // Remove User import
+import { supabase } from "@/lib/supabase";
 import Projects from "./Projects";
 import ContactTable from "./Contact";
 import Image from "next/image";
@@ -16,7 +16,6 @@ type Contact = {
   created_at: string;
 };
 
-// Define a minimal type for the user object
 type AuthUser = {
   id: string;
   email?: string;
@@ -30,9 +29,8 @@ const AdminDashboard = () => {
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [imageUrl] = useState<string | null>(null);
   const [activeView, setActiveView] = useState<"upload" | "contacts">("upload");
-  const [user, setUser] = useState<AuthUser | null>(null); // Use the custom AuthUser type
+  const [user, setUser] = useState<AuthUser | null>(null);
 
-  // Fetch contacts data from Supabase
   useEffect(() => {
     const fetchContacts = async () => {
       const { data, error } = await supabase.from("contacts").select("*");
@@ -46,22 +44,20 @@ const AdminDashboard = () => {
     fetchContacts();
   }, []);
 
-  // Check if the user is authenticated on component mount
   useEffect(() => {
     const fetchUser = async () => {
       const { data: { user }, error } = await supabase.auth.getUser();
       if (error) {
         console.error("Error fetching user:", error);
       } else if (user) {
-        setUser({ id: user.id, email: user.email }); // Map the user object to AuthUser
-        setIsModalOpen(false); // Close the modal if the user is authenticated
+        setUser({ id: user.id, email: user.email });
+        setIsModalOpen(false);
       }
     };
 
     fetchUser();
   }, []);
 
-  // Handle login with Supabase Auth
   const handleLogin = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
@@ -77,8 +73,8 @@ const AdminDashboard = () => {
       }
 
       if (data.user) {
-        setUser({ id: data.user.id, email: data.user.email }); // Map the user object to AuthUser
-        setIsModalOpen(false); // Close the modal after successful login
+        setUser({ id: data.user.id, email: data.user.email });
+        setIsModalOpen(false);
         setErrorMessage(null);
       }
     } catch (error) {
@@ -87,18 +83,16 @@ const AdminDashboard = () => {
     }
   };
 
-  // Handle logout
   const handleLogout = async () => {
     const { error } = await supabase.auth.signOut();
     if (error) {
       setErrorMessage(error.message);
     } else {
       setUser(null);
-      setIsModalOpen(true); // Reopen the login modal
+      setIsModalOpen(true);
     }
   };
 
-  // Handle delete contact
   const handleDelete = async (id: number) => {
     const { error } = await supabase.from("contacts").delete().eq("id", id);
     if (error) {
@@ -112,7 +106,6 @@ const AdminDashboard = () => {
 
   return (
     <div className="p-6 bg-gray-300 text-zinc-600 min-h-screen">
-      {/* Login Modal */}
       {isModalOpen && (
         <div className="fixed flex justify-center items-center w-screen h-screen">
           <div className="bg-gray-300 p-6 border-2 border-zinc-600 rounded-xl shadow-lg">
@@ -148,7 +141,6 @@ const AdminDashboard = () => {
         </div>
       )}
 
-      {/* Admin Dashboard */}
       {!isModalOpen && user && (
         <>
           <div className="flex justify-between items-center mb-6">
