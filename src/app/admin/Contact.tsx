@@ -16,7 +16,6 @@ interface ContactProps {
 }
 
 const ContactTable: React.FC<ContactProps> = ({ contacts, handleDelete }) => {
-  // Sort contacts by created_at in descending order (newest first)
   const sortedContacts = [...contacts].sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
 
   return (
@@ -39,7 +38,7 @@ const ContactTable: React.FC<ContactProps> = ({ contacts, handleDelete }) => {
               <td className="border border-zinc-600 p-3">{contact.message}</td>
               <td className="border border-zinc-600 p-3">
                 {new Date(contact.created_at).toLocaleString("en-GB", {
-                  hour12: false, // 24-hour format
+                  hour12: false,
                   year: "numeric",
                   month: "2-digit",
                   day: "2-digit",

@@ -44,28 +44,22 @@ const Projects: React.FC = () => {
     setMessage("");
 
     try {
-      // Generate a unique file path using a timestamp
       const timestamp = Date.now();
       const fileExt = image.name.split(".").pop();
-      const filePath = `${projectLink}_${timestamp}.${fileExt}`; // Append timestamp to the file name
+      const filePath = `${projectLink}_${timestamp}.${fileExt}`;
 
-      // Upload the image to Supabase Storage
       const { error: storageError } = await supabase.storage.from("images").upload(filePath, image);
       if (storageError) throw storageError;
 
-      // Get the public URL of the uploaded image
       const publicURL = supabase.storage.from("images").getPublicUrl(filePath).data?.publicUrl;
       if (!publicURL) throw new Error("Failed to retrieve public URL.");
 
-      // Insert the project data into the database
       const { error: dbError } = await supabase.from("images").insert([{ project_link: projectLink, url: publicURL, ranking }]);
       if (dbError) throw dbError;
 
-      // Fetch the updated list of projects
       const { data: updatedProjects, error: fetchError } = await supabase.from("images").select("*").order("ranking", { ascending: true });
       if (fetchError) throw fetchError;
 
-      // Update the state with the new list of projects
       setProjects(updatedProjects || []);
       setMessage("Image uploaded and saved to the database successfully!");
     } catch (error) {
