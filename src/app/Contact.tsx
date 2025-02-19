@@ -3,7 +3,6 @@
 import React, { useState } from "react";
 import { supabase } from "@/lib/supabase";
 
-// Validate environment variables outside the component
 if (!process.env.NEXT_PUBLIC_SUPABASE_URL || !process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY) {
   console.error("Supabase environment variables are missing.");
 }
@@ -19,7 +18,6 @@ const Contact: React.FC = () => {
     e.preventDefault();
     setLoading(true);
 
-    // Validate inputs
     if (!name || !email || !message) {
       setStatus("All fields are required.");
       setLoading(false);
@@ -27,7 +25,6 @@ const Contact: React.FC = () => {
     }
 
     try {
-      // Insert data into Supabase
       const { error } = await supabase.from("contacts").insert([
         { name, email, message },
       ]);

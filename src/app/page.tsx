@@ -12,7 +12,7 @@ export default function Home() {
   return (
     <React.StrictMode>
       <Head>
-        <title>Your Name - Web Developer Portfolio</title>
+        <title>Mohamed Mehdi - Web Developer Portfolio</title>
         <meta name="description" content="Hi, I'm Mohamed Mehdi, a web developer specializing in React, JavaScript, and modern web technologies. Check out my projects and skills!" />
         <meta name="keywords" content="web developer, portfolio, React, JavaScript, frontend developer, projects" />
         <meta name="author" content="Mohamed Mehdi" />
