@@ -166,6 +166,7 @@ const Projects: React.FC = () => {
                   alt={project.project_link}
                   width={300}
                   height={200}
+                  unoptimized
                   className="object-cover object-top w-full h-[200px] transition-transform transform hover:scale-105"
                 />
                 <div className="p-4">

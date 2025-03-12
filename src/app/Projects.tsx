@@ -65,6 +65,7 @@ export default function Projects() {
                   width={400}
                   height={200}
                   priority
+                  unoptimized
                 />
               </a>
             </div>

@@ -55,6 +55,7 @@ const Technologies = () => {
                   height={500}
                   alt={item.name}
                   src={item.src}
+                  unoptimized
                   className="p-2 md:p-4 w-20 h-20 md:w-32 md:h-32 md:hover:p-1.5 duration-200 rounded-lg bg-white"
                 />
                 <p className="text-sm md:text-lg mt-2">{item.name}</p>
