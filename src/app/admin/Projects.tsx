@@ -13,6 +13,7 @@ const Projects: React.FC = () => {
   const [uploading, setUploading] = useState(false);
   const [message, setMessage] = useState("");
   const [projects, setProjects] = useState<{ id: number; project_link: string; url: string; ranking: number }[]>([]);
+  const [editingProject, setEditingProject] = useState<{ id: number; project_link: string; url: string; ranking: number } | null>(null);
 
   useEffect(() => {
     const fetchProjects = async () => {
@@ -108,6 +109,49 @@ const Projects: React.FC = () => {
     }
   };
 
+  const startEditing = (project: { id: number; project_link: string; url: string; ranking: number }) => {
+    setEditingProject(project);
+    setProjectLink(project.project_link);
+    setRanking(project.ranking);
+  };
+
+  const cancelEditing = () => {
+    setEditingProject(null);
+    setProjectLink("");
+    setRanking(0);
+  };
+
+  const updateProject = async () => {
+    if (!editingProject || !projectLink.trim() || ranking < 1) {
+      setMessage("Please provide a project link and a valid ranking.");
+      return;
+    }
+
+    setUploading(true);
+    setMessage("");
+
+    try {
+      const { error } = await supabase
+        .from("images")
+        .update({ project_link: projectLink, ranking })
+        .eq("id", editingProject.id);
+      if (error) throw error;
+
+      const { data: updatedProjects, error: fetchError } = await supabase.from("images").select("*").order("ranking", { ascending: true });
+      if (fetchError) throw fetchError;
+
+      setProjects(updatedProjects || []);
+      setMessage("Project updated successfully!");
+      setEditingProject(null);
+      setProjectLink("");
+      setRanking(0);
+    } catch (error) {
+      setMessage(`Error updating project: ${(error as Error).message}`);
+    } finally {
+      setUploading(false);
+    }
+  };
+
   return (
     <div className="max-w-4xl mx-auto p-6 bg-gray-300 shadow-md border-2 border-zinc-600 rounded-lg">
       <h1 className="text-3xl font-semibold text-center text-zinc-600 mb-6">Upload Your Project</h1>
@@ -143,15 +187,35 @@ const Projects: React.FC = () => {
         />
       </div>
 
-      <button
-        onClick={uploadImage}
-        disabled={uploading}
-        className={`w-full p-3 bg-zinc-600 text-gray-300 rounded-lg font-semibold ${
-          uploading ? "opacity-50 cursor-not-allowed" : "hover:bg-zinc-700"
-        } transition-all`}
-      >
-        {uploading ? "Uploading..." : "Upload"}
-      </button>
+      {editingProject ? (
+        <div className="flex gap-4">
+          <button
+            onClick={updateProject}
+            disabled={uploading}
+            className={`w-full p-3 bg-zinc-600 text-gray-300 rounded-lg font-semibold ${
+              uploading ? "opacity-50 cursor-not-allowed" : "hover:bg-zinc-700"
+            } transition-all`}
+          >
+            {uploading ? "Updating..." : "Update Project"}
+          </button>
+          <button
+            onClick={cancelEditing}
+            className="w-full p-3 bg-red-600 text-gray-300 rounded-lg font-semibold hover:bg-red-700 transition-all"
+          >
+            Cancel
+          </button>
+        </div>
+      ) : (
+        <button
+          onClick={uploadImage}
+          disabled={uploading}
+          className={`w-full p-3 bg-zinc-600 text-gray-300 rounded-lg font-semibold ${
+            uploading ? "opacity-50 cursor-not-allowed" : "hover:bg-zinc-700"
+          } transition-all`}
+        >
+          {uploading ? "Uploading..." : "Upload"}
+        </button>
+      )}
 
       {message && <p className="mt-4 text-center text-sm text-red-500">{message}</p>}
 
@@ -188,6 +252,12 @@ const Projects: React.FC = () => {
                     View Project
                   </a>
                   <br />
+                  <button
+                    onClick={() => startEditing(project)}
+                    className="mt-4 p-2 rounded-xl mx-1 bg-blue-500 text-white hover:bg-blue-700 duration-300"
+                  >
+                    Edit Project
+                  </button>
                   <button
                     onClick={() => deleteProject(project.id)}
                     className="mt-4 p-2 rounded-xl bg-red-500 text-white hover:bg-red-700 duration-300"
