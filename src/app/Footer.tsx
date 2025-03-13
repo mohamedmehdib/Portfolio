@@ -32,7 +32,7 @@ export default function Footer() {
         </a>
       </ul>
       <div className='md:text-lg'>
-        Copyrights Ⓒ 2024 . All rights reserved
+        Copyrights Ⓒ 2025 . All rights reserved
       </div>
     </div>
   );
